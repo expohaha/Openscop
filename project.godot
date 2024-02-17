@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="Petscop"
-run/main_scene="res://scenes/test-plane.tscn"
+run/main_scene="res://scenes/test.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Openscop"
-config/features=PackedStringArray("4.1", "GL Compatibility")
+config/features=PackedStringArray("4.2", "GL Compatibility")
 run/max_fps=30
 config/icon="res://gift.png"
 
@@ -22,6 +22,7 @@ config/icon="res://gift.png"
 
 Global="*res://scripts/global.gd"
 bg_music="*res://scenes/objects/setup/bg_music.tscn"
+DiscordSDKLoader="*res://addons/discord-sdk-gd/nodes/discord_autoload.gd"
 
 [display]
 
@@ -33,6 +34,10 @@ window/vsync/vsync_mode=0
 [dotnet]
 
 project/assembly_name="Openscop"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/discord-sdk-gd/plugin.cfg")
 
 [input]
 

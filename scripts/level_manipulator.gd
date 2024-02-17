@@ -1,4 +1,14 @@
 extends Node
+@export_subgroup("Discord SDK")
+@export var dsdk_enabled = true # Is SDK Enabled
+@export var _appId = 1208250381209964594 # Application ID
+
+@export var _details = "Exploring the Gift Plane" # Text 2
+@export var _state = "0/10 Pets" # Text 3 (smaller)
+@export var _large_image = "main" # Image
+@export var _large_image_text = "Petscop" # Text on hover
+@export var _small_image = "" # Smaller icon
+@export var _small_image_text = "" # Text on hover
 @export_subgroup("Level Settings")
 @export var room_name = ""
 @export var loading_preset=""
@@ -27,18 +37,22 @@ extends Node
 @export var front_max_limit = 0.
 @export var vertical_max_limit = 0.
 @export_subgroup("Environment")
-@export var enable_fog = false
+
+## Vector4(R, G, B, A); 0-1
+@export var enable_fog = true #false
 @export var texture_background = false
 @export var texture: Texture2D
 @export var scroll_speed = 0.25
-@export var sky_and_fog_color = Vector4.ZERO
-@export var fog_radius = 0.
-@export var ambient_color = Color(0., 0., 0.,1.0)
+#@export var sky_and_fog_color = Vector4.ZERO #Vector4.ZERO
+@export var fog_color = Vector4(1, 1, 1.0, 1.0) #Vector4.ZERO
+@export var sky_color = Vector4(1, 1, 1.0, 1.0) #Vector4.ZERO
+@export var fog_radius = 50.
+@export var ambient_color = Color(1., 1., 1.,1.0)
 @export var environment_darkness = 0.
 @export var set_custom_fog_focus = false
 @export var set_fog_focus = Vector3.ZERO
 @export_subgroup("Hardcoded Preset")
-@export var preset = 0
+@export var preset = 1
 #1 = EVENCARE/GIFTPLANE
 #2 = NMP
 
@@ -121,10 +135,14 @@ func _ready():
 	
 	if enable_fog:
 		RenderingServer.global_shader_parameter_set("fog_enable", true)
-		if sky_and_fog_color!=Vector4(0.,0.,0.,0.):
+		if fog_color!=Vector4(0.,0.,0.,0.):
 		#SETS FOG COLOR AND FOG RADIUS AS GAME RUNS
-			RenderingServer.global_shader_parameter_set("fog_color", sky_and_fog_color)
-			$skybox.get_environment().set_bg_color(Color(sky_and_fog_color.x,sky_and_fog_color.y,sky_and_fog_color.z,sky_and_fog_color.w))
+			RenderingServer.global_shader_parameter_set("fog_color", fog_color)
+			#RenderingServer.global_shader_parameter_set("modulate_color", Color(1, 1, 1, 0))
+			if fog_radius!=0.:
+				RenderingServer.global_shader_parameter_set("sphere_size", fog_radius)
+			else:
+				RenderingServer.global_shader_parameter_set("sphere_size", 13.5)
 		else:
 			RenderingServer.global_shader_parameter_set("fog_color", Vector4.ZERO)
 			$skybox.get_environment().set_bg_color(Color(0.,0.,0.,0.))
@@ -135,10 +153,13 @@ func _ready():
 	else:
 		RenderingServer.global_shader_parameter_set("fog_enable", false)
 	
+	if sky_color!=Vector4(0.,0.,0.,0.):
+		$skybox.get_environment().set_bg_color(Color(sky_color.x,sky_color.y,sky_color.z,sky_color.w))
+	
 	if !texture_background:
 		$background/color.visible=true
 		$background/texture.visible=false
-		$background/color.color = Color(sky_and_fog_color.x,sky_and_fog_color.y,sky_and_fog_color.z,1.0)
+		$background/color.color = Color(sky_color.x,sky_color.y,sky_color.z,1.0)
 	else:
 		$background/color.visible=false
 		$background/texture.visible=true
@@ -146,4 +167,19 @@ func _ready():
 			$background/texture.texture=texture
 		$background/texture.get_material().set_shader_parameter("scroll_speed",scroll_speed)
 	bg_music.play_track(background_music_id)
+	
+	if dsdk_enabled:
+		DiscordSDK.app_id = _appId
+		DiscordSDK.details = _details
+		DiscordSDK.state = _state
+		
+		DiscordSDK.large_image = _large_image # Image key from "Art Assets"
+		DiscordSDK.large_image_text = _large_image_text
+		DiscordSDK.small_image = _small_image # Image key from "Art Assets"
+		DiscordSDK.small_image_text = _small_image_text
+
+		DiscordSDK.start_timestamp = int(Time.get_unix_time_from_system()) # "02:46 elapsed"
+		# DiscordSDK.end_timestamp = int(Time.get_unix_time_from_system()) + 3600 # +1 hour in unix time / "01:00:00 remaining"
+
+		DiscordSDK.refresh() # Always refresh after changing the values!
 	

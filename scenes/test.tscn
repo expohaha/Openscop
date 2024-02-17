@@ -42,4 +42,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 28.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -29.5)
 
 [node name="level_manipulator" parent="." instance=ExtResource("4_bgdvl")]
-enable_fog = true
